@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O o) {
-                        // 因为在容器初始化时就已经把数据库权限相关的信息放入内存中,因此因此不需要InvocationSecurityMetadataSource中获取
+                        // 因为在容器初始化时就已经把数据库权限相关的信息放入内存中,因此不需要InvocationSecurityMetadataSource中获取
 //                        o.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource);
                         o.setAccessDecisionManager(urlAccessDecisionManager);
                         return o;
