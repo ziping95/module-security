@@ -1,11 +1,9 @@
 package com.wzp.module.security.config;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wzp.module.core.utils.CollectionUtil;
 import com.wzp.module.core.utils.RedisUtil;
 import com.wzp.module.security.SecurityConstant;
 import com.wzp.module.user.bean.User;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDecisionManager;
@@ -14,7 +12,6 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
