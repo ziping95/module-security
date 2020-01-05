@@ -98,7 +98,7 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
      * @return
      */
     private boolean isPathMatcher (String roleId,String requestUrl) {
-        List<String> pathList = (List<String>) RedisUtil.hashGet(SecurityConstant.ROLE_REDIS_KEY,roleId);
+        List<String> pathList = (List<String>) roleAndPaths.get(roleId);
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         if(CollectionUtil.isNotEmpty(pathList)) {
             for (String path : pathList) {
