@@ -63,7 +63,7 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
             return;
         }
 
-        // 从缓存中拿到token,作为key去redis查询是否有当前这个用户
+        // 从cookies中拿到token,作为key去redis查询是否有当前这个用户
         if(cookies != null && cookies.length != 0) {
             for (Cookie c : cookies) {
                 if("token".equals(c.getName())) {
