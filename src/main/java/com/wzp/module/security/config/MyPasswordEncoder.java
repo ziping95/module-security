@@ -34,8 +34,4 @@ public class MyPasswordEncoder implements PasswordEncoder {
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
         return encode(rawPassword).equals(encodedPassword);
     }
-
-    private void test() {
-
-    }
 }
