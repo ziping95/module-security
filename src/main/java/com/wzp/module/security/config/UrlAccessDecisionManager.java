@@ -69,7 +69,6 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
                 if("token".equals(c.getName())) {
                     String token = c.getValue();
                     User user = (User) RedisUtil.get(SecurityConstant.TOKEN_REDIS_KEY + token);
-                    SecurityContextHolder.getContext().getAuthentication();
                     // 验证token是否正确
                     if (user != null && user.getRole() != null && isPathMatcher(user.getRole().getId(),requestUrl)) {
                         return;
