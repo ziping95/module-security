@@ -6,5 +6,5 @@ public class SecurityConstant {
     public final static String TOKEN_REDIS_KEY = "token_";
     public final static String ANYONE = "anyone";
     public final static String PERMITALL = "permitAll";
-
+    public final static Long EXPIRES = 7200L;
 }

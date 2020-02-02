@@ -4,6 +4,7 @@ import com.wzp.module.security.dto.UserDto;
 import com.wzp.module.user.bean.Role;
 import com.wzp.module.user.bean.User;
 import com.wzp.module.user.mapper.UserMapper;
+import com.wzp.module.user.service.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,11 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Resource
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        User user = userMapper.selectUserByLoginId(loginId);
+        User user = userService.selectUserByLoginId(loginId);
         if (user == null) {
             throw new UsernameNotFoundException("用户不存在");
         }

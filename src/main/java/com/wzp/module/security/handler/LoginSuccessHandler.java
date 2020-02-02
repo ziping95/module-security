@@ -3,6 +3,7 @@ package com.wzp.module.security.handler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wzp.module.core.utils.RedisUtil;
+import com.wzp.module.security.SecurityConstant;
 import com.wzp.module.security.dto.UserDto;
 import com.wzp.module.user.UserConstant;
 import com.wzp.module.user.bean.User;
@@ -37,9 +38,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String token = UUID.randomUUID().toString().replaceAll("-","");
         // 直接序列化UserDetails对象,在反序列化时由于isEnabled方法引起反序列化失败,因为序列化时默认属性名为enabled,但由于实现的UserDetails接口因此无enabled属性,导致报错
-        RedisUtil.put(UserConstant.TOKEN_REDIS_KEY + token, UserDto.userDtoToUser((UserDto) authentication.getPrincipal()));
+        RedisUtil.put(UserConstant.TOKEN_REDIS_KEY + token, UserDto.userDtoToUser((UserDto) authentication.getPrincipal()), SecurityConstant.EXPIRES);
         Cookie cookie = new Cookie("token",token);
         cookie.setPath("/");
+        cookie.setMaxAge(SecurityConstant.EXPIRES.intValue());
         response.addCookie(cookie);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");

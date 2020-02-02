@@ -3,6 +3,7 @@ package com.wzp.module.security.config;
 import com.wzp.module.core.utils.CollectionUtil;
 import com.wzp.module.core.utils.RedisUtil;
 import com.wzp.module.security.SecurityConstant;
+import com.wzp.module.user.UserConstant;
 import com.wzp.module.user.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
     /**
      * 将角色和权限保存在内存中
      */
-    private static final Map<String,Object> roleAndPaths = new HashMap<>();
+    private static final Map<String, Object> roleAndPaths = new HashMap<>();
 
 
     @Override
@@ -39,12 +40,19 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
         Cookie[] cookies = ((FilterInvocation) o).getRequest().getCookies();
 
+        User user = UserConstant.getCurrentUser();
+
+        // 超级管理员拥有全部权限
+        if (user != null && user.getRole() != null && UserConstant.SUPER_ADMIN_CODE.equals(user.getRole().getCode())) {
+            return;
+        }
+
         // 这里是为了兼容WebSecurityConfig中的路径配置
         List<ConfigAttribute> configPath = new ArrayList<>(collection);
         try {
             if (getAuthorizeExpression != null) {
                 String expression = getAuthorizeExpression.invoke(configPath.get(0)).toString();
-                if(SecurityConstant.PERMITALL.equals(expression)) {
+                if (SecurityConstant.PERMITALL.equals(expression)) {
                     return;
                 }
             } else {
@@ -52,27 +60,21 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-            logger.error("反射获取security配置失败,异常为{}",e.getMessage());
+            logger.error("反射获取security配置失败,异常为{}", e.getMessage());
         }
 
         // 先验证是否为游客接口,符合条件则直接放行
-        if(isPathMatcher(SecurityConstant.ANYONE,requestUrl)) {
+        if (isPathMatcher(SecurityConstant.ANYONE, requestUrl)) {
             return;
         }
 
         // 从cookies中拿到token,作为key去redis查询是否有当前这个用户
-        if(cookies != null && cookies.length != 0) {
-            for (Cookie c : cookies) {
-                if("token".equals(c.getName())) {
-                    String token = c.getValue();
-                    User user = (User) RedisUtil.get(SecurityConstant.TOKEN_REDIS_KEY + token);
-                    // 验证token是否正确
-                    if (user != null && user.getRole() != null && isPathMatcher(user.getRole().getId(),requestUrl)) {
-                        return;
-                    }
-                    throw new AccessDeniedException("权限不足");
-                }
+        if (cookies != null && cookies.length != 0) {
+            // 验证token是否正确
+            if (user != null && user.getRole() != null && isPathMatcher(user.getRole().getId(), requestUrl)) {
+                return;
             }
+            throw new AccessDeniedException("权限不足");
         }
         throw new BadCredentialsException("用户未登录");
     }
@@ -89,16 +91,17 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
 
     /**
      * 匹配路径
+     *
      * @param roleId
      * @param requestUrl
      * @return
      */
-    private boolean isPathMatcher (String roleId,String requestUrl) {
+    private boolean isPathMatcher(String roleId, String requestUrl) {
         List<String> pathList = (List<String>) roleAndPaths.get(roleId);
         AntPathMatcher antPathMatcher = new AntPathMatcher();
-        if(CollectionUtil.isNotEmpty(pathList)) {
+        if (CollectionUtil.isNotEmpty(pathList)) {
             for (String path : pathList) {
-                if(antPathMatcher.match(path,requestUrl)) {
+                if (antPathMatcher.match(path, requestUrl)) {
                     return true;
                 }
             }
