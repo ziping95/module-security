@@ -31,7 +31,6 @@ public class UrlFilterInvocationSecurityMetadataSource extends DefaultFilterInvo
      * @param requestMap order-preserving map of request definitions to attribute lists
      */
     public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap) {
-        // d
         super(requestMap);
         this.requestMap = requestMap;
     }
